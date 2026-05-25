@@ -786,10 +786,30 @@ void MdlVisual::interrupt() {
   setStateItem(MeshObjects::Mesh(),"");
   }
 
+float MdlVisual::collisionHeight(MeshAttach const & attach) const {
+  // y-pos relative to the entire object
+  auto const & matrix = skInst->bone(attach.boneId);
+  auto y = matrix[3][1] - pos[3][1];
+
+  // add collision height
+  auto const & bounds = attach.view.bounds();
+  y += std::fabs(bounds.bbox[1].y - bounds.bbox[0].y) * 1.6f;
+
+  return y;
+}
+
 Tempest::Vec3 MdlVisual::displayPosition() const {
-  if(skeleton!=nullptr)
-    return {0,skeleton->colisionHeight()*1.6f,0};
-  return {0.f,0.f,0.f};
+  if(skeleton==nullptr)
+    return {0.f,0.f,0.f};
+
+  auto y = collisionHeight(head);
+
+  if (head.view.isEmpty()) {
+    // fallback for monsters (e.g. bloodfly has no separate head)
+    y = skeleton->colisionHeight() * 1.6f;
+  }
+
+  return {0, y, 0};
   }
 
 float MdlVisual::viewDirection() const {

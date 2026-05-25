@@ -136,6 +136,8 @@ class MdlVisual final {
       size_t                     boneId=size_t(-1);
       };
 
+    float collisionHeight(MeshAttach const & attach) const;
+
     void implSetBody(Npc* npc, World& world, MeshObjects::Mesh&& body, const int32_t version);
     void setSlotAttachment(MeshObjects::Mesh&& itm, std::string_view bone);
 
